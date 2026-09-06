@@ -25,16 +25,33 @@ marketRouter.get('/search', async (req: Request, res: Response) => {
         );
         if (r.ok) {
           const data = await r.json() as any;
-          const results = (data.result || [])
-            .slice(0, 10)
-            .map((item: any) => ({
-              symbol: item.symbol,
-              name: item.description,
-              exchange: item.primaryExchange || item.type || 'US',
-              type: (item.type === 'Crypto' ? 'CRYPTO' : item.type === 'ETF' ? 'ETF' : 'STOCK') as 'STOCK' | 'CRYPTO' | 'ETF' | 'INDEX',
-              currentPrice: 0,        // fetched on demand when added
-              dayChangePercent: 0
-            }));
+          const top5 = (data.result || []).slice(0, 5); // limit to 5 to stay within rate limits
+
+          // Fetch live prices in parallel for all results
+          const results = await Promise.all(
+            top5.map(async (item: any) => {
+              try {
+                const snapshot = await getLatestSnapshot(item.symbol);
+                return {
+                  symbol: item.symbol,
+                  name: item.description,
+                  exchange: item.primaryExchange || item.type || 'US',
+                  type: (item.type === 'Crypto' ? 'CRYPTO' : item.type === 'ETF' ? 'ETF' : 'STOCK') as 'STOCK' | 'CRYPTO' | 'ETF' | 'INDEX',
+                  currentPrice: snapshot.price,
+                  dayChangePercent: snapshot.dayChangePercent
+                };
+              } catch {
+                return {
+                  symbol: item.symbol,
+                  name: item.description,
+                  exchange: item.primaryExchange || item.type || 'US',
+                  type: (item.type === 'Crypto' ? 'CRYPTO' : item.type === 'ETF' ? 'ETF' : 'STOCK') as 'STOCK' | 'CRYPTO' | 'ETF' | 'INDEX',
+                  currentPrice: 0,
+                  dayChangePercent: 0
+                };
+              }
+            })
+          );
           return res.json({ success: true, results });
         }
       } catch (fetchErr) {
