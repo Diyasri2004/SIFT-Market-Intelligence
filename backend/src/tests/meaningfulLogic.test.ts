@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert';
 import { evaluateMeaningfulChange, DEFAULT_CONFIG } from '../services/meaningfulLogic.js';
-import { PriceSnapshot, UserSymbolCheckpoint } from '../../../shared/types.js';
+import { PriceSnapshot, UserSymbolCheckpoint } from '../shared/types.js';
 
 test('Diff Logic: triggers PRICE_SURGE when price increases >= 2%', () => {
   const snapshot: PriceSnapshot = {

@@ -3,7 +3,7 @@ import { db } from '../db/database.js';
 import { getLatestSnapshot, getSymbolHistory } from '../services/marketService.js';
 import { getSymbolMetadata, searchSymbols } from '../services/marketDirectory.js';
 import { evaluateMeaningfulChange, DEFAULT_CONFIG } from '../services/meaningfulLogic.js';
-import { SymbolDetailResponse, UserSymbolCheckpoint } from '../../../shared/types.js';
+import { SymbolDetailResponse, UserSymbolCheckpoint } from '../shared/types.js';
 
 export const marketRouter = Router();
 

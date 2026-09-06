@@ -3,7 +3,7 @@ import { db } from '../db/database.js';
 import { getLatestSnapshot } from '../services/marketService.js';
 import { getSymbolMetadata } from '../services/marketDirectory.js';
 import { evaluateMeaningfulChange } from '../services/meaningfulLogic.js';
-import { WatchlistItem, DigestItem, DigestResponse, UserSymbolCheckpoint } from '../../../shared/types.js';
+import { WatchlistItem, DigestItem, DigestResponse, UserSymbolCheckpoint } from '../shared/types.js';
 
 export const watchlistRouter = Router();
 

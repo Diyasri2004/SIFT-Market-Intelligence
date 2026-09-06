@@ -1,5 +1,5 @@
 import { db } from '../db/database.js';
-import { PriceSnapshot, MarketHistoryPoint } from '../../../shared/types.js';
+import { PriceSnapshot, MarketHistoryPoint } from '../shared/types.js';
 import { getSymbolMetadata, SYMBOL_DIRECTORY } from './marketDirectory.js';
 
 interface CacheEntry {

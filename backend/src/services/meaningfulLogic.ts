@@ -1,4 +1,4 @@
-import { DigestItem, MeaningfulChangeType, PriceSnapshot, UserSymbolCheckpoint } from '../../../shared/types.js';
+import { DigestItem, MeaningfulChangeType, PriceSnapshot, UserSymbolCheckpoint } from '../shared/types.js';
 import { getSymbolMetadata } from './marketDirectory.js';
 
 export interface MeaningfulConfig {
