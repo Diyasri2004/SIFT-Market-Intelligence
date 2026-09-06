@@ -10,7 +10,11 @@ import { startMarketPollingService } from './services/marketService.js';
 import { seedData } from './db/seed.js';
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+const port = Number(process.env.PORT) || 4000;                                                      
+                                                                                                      
+  app.listen(port, "0.0.0.0", () => {                                                                 
+    console.log(`API running on port ${port}`);                                                       
+  });
 
 // Initialize Database and seed demo data if needed
 initDatabase();
