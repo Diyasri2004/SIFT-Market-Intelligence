@@ -1,6 +1,6 @@
 import { WatchlistItem, DigestResponse, SymbolDetailResponse, SearchResultItem } from '../../../shared/types.js';
 
-const API_BASE = '/api';
+const API_BASE = (import.meta.env.VITE_API_BASE as string) || '/api';
 
 function getDeviceId(): string {
   let id = localStorage.getItem('grow_device_id');
