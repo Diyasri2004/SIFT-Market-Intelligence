@@ -8,13 +8,42 @@ import { SymbolDetailResponse, UserSymbolCheckpoint } from '../shared/types.js';
 export const marketRouter = Router();
 
 /**
- * GET /api/market/search?q=...
+ * GET /api/market/search?q=...\
  */
 marketRouter.get('/search', async (req: Request, res: Response) => {
   try {
     const query = (req.query.q as string) || '';
-    const rawResults = searchSymbols(query);
+    if (!query.trim()) return res.json({ success: true, results: [] });
 
+    const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY || '';
+
+    // Use Finnhub live search when key is available — covers all global exchanges
+    if (FINNHUB_API_KEY) {
+      try {
+        const r = await fetch(
+          `https://finnhub.io/api/v1/search?q=${encodeURIComponent(query)}&token=${FINNHUB_API_KEY}`
+        );
+        if (r.ok) {
+          const data = await r.json() as any;
+          const results = (data.result || [])
+            .slice(0, 10)
+            .map((item: any) => ({
+              symbol: item.symbol,
+              name: item.description,
+              exchange: item.primaryExchange || item.type || 'US',
+              type: (item.type === 'Crypto' ? 'CRYPTO' : item.type === 'ETF' ? 'ETF' : 'STOCK') as 'STOCK' | 'CRYPTO' | 'ETF' | 'INDEX',
+              currentPrice: 0,        // fetched on demand when added
+              dayChangePercent: 0
+            }));
+          return res.json({ success: true, results });
+        }
+      } catch (fetchErr) {
+        console.warn('[Search] Finnhub search failed, falling back to local directory:', fetchErr);
+      }
+    }
+
+    // Fallback: local directory search
+    const rawResults = searchSymbols(query);
     const results = await Promise.all(
       rawResults.map(async (meta) => {
         const snapshot = await getLatestSnapshot(meta.symbol);
@@ -28,13 +57,13 @@ marketRouter.get('/search', async (req: Request, res: Response) => {
         };
       })
     );
-
     res.json({ success: true, results });
   } catch (err: any) {
     console.error('Search error:', err);
     res.status(500).json({ success: false, error: err.message || 'Internal server error' });
   }
 });
+
 
 /**
  * GET /api/market/:symbol - Detailed view with history, explanation, checkpoint diff
