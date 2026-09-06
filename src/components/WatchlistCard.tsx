@@ -1,6 +1,6 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, Trash2, AlertTriangle, Eye } from 'lucide-react';
-import { WatchlistItem } from '../../../shared/types.js';
+import { WatchlistItem } from '../../shared/types.js';
 import { formatTimeAgo } from '../utils/formatters.js';
 
 interface SparklineProps {
