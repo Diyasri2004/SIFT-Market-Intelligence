@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config({ path: '../.env' });
 
 import express from 'express';
+import path from 'path';
 import cors from 'cors';
 import { initDatabase } from './db/database.js';
 import { watchlistRouter } from './routes/watchlistRoutes.js';
@@ -42,6 +43,15 @@ app.get('/api/health', (req, res) => {
 // Routes
 app.use('/api/watchlist', watchlistRouter);
 app.use('/api/market', marketRouter);
+
+// Serve frontend static files — process.cwd() is the repo root on Render
+const frontendDist = path.join(process.cwd(), 'frontend', 'dist');
+app.use(express.static(frontendDist));
+
+// SPA fallback: all non-API routes serve index.html
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(frontendDist, 'index.html'));
+});
 
 // Start polling service (every 15s)
 startMarketPollingService(15000);
